@@ -3,25 +3,35 @@
 
 */
 {
-
+    var firstO = 'none'
+    // Create the canvas 
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    var wide = window.innerWidth;
+    var tall = window.innerHeight;
+    canvas.width = wide;
+    canvas.height = tall;
+    canvas.style.position = 'absolute';
+    canvas.style.zIndex = "-10";
+    canvas.style.left = '0%';
+    canvas.style.top = '0%';
+    document.body.appendChild(canvas);
+    var touchX = -1;
+    var touchY = -1;
+    var ctx = canvas.getContext("2d");
     //THIS IS CALLED ON BODY LOAD AND SETS UP TRANSPARENT BUTTON ELEMENTS THAT I HAD TO OVERLAY THE CANVAS WITH TO 
     //GET MOBILE SAFARI ON IPHONE TO PLAY THE SOUNDS AND NOT BRING UP THE LONG PRESS SAVE AS IMAGE MENU
     var setup = function() {
-
-        var orientation = 'none'
-        if (window.innerWidth > window.innerHeight) {
-            orientation = 'LANDSCAPE'
-            FirstOrientation = orientation
-            jedi = window.innerWidth * 1.2
-
-            game = 13
+        if (window.innerHeight < window.innerWidth) {
+            if (firstO == 'none') {
+                firstO = 'Landscape'
+            }
         } else {
-            orientation = 'PORTRAIT'
-            FirstOrientation = orientation
+            if (firstO == 'none') {
+                firstO = 'Portrait'
+            }
         }
-        // alert(orientation)
         var BB = document.getElementById("bigButton");
-        //gameCanvas
         BB.style.background = 'transparent';
         BB.style.borderColor = 'transparent';
         BB.style.position = 'absolute';
@@ -54,45 +64,6 @@
         SB.style.top = '90%';
         SB.style.width = wide + 'px';
         SB.style.height = '100%';
-        screen.orientation.addEventListener('change', function() {
-
-            setTimeout(function() {
-                if (window.innerWidth > window.innerHeight) {
-                    orientation = 'LANDSCAPE'
-                    OGgame = game
-                    game = 13
-                    wide = window.innerWidth;
-                    tall = window.innerHeight;
-                    lucas = 300
-                    yoda = 60
-                    canvas.width = wide;
-                    canvas.height = tall;
-                } else {
-                    orientation = 'PORTRAIT'
-                    if (FirstOrientation == 'LANDSCAPE') {
-                        location.reload()
-                    }
-                    game = OGgame
-                    wide = window.innerWidth;
-                    tall = window.innerHeight;
-                    canvas.width = wide;
-                    canvas.height = tall;
-                    cW = wide / 2;
-                    cH = tall / 2;
-                    planetCore[0].x = cW;
-                    planetCore[0].y = cH;
-                    for (var i = 0; i < alienPopulation; i++) {//aliens[i].x = cW;
-                    //aliens[i].y = cH;
-                    }
-
-                    for (var i = 0; i < empNumber; i++) {//emps[i].x = cW;
-                    //emps[i].y = cH;
-                    }
-                }
-
-            }, 100);
-
-        });
     };
     // THIS IS WHERE A ZZFX SOUND IS PLAYED AT 0 VOLUME TO GET MOBILE SAFARI ON IPHONES TO ALLOW
     // SOUND FOR REST OF THE GAME.  IT THEN SHRINKS THE BUTTON THAT WAS CLICKED TO CALL THIS
@@ -109,6 +80,10 @@
         touchX = wide;
         touchY = tall;
     }
+
+    // THIS SETS UP THE MIDDLE OF THE VISIBLE WINDOW 
+    var cW = wide / 2;
+    var cH = tall / 2;
 
     // THIS IS ZZFX.JS PASTED IN 
     'use strict';
@@ -159,7 +134,6 @@
 
     // THESE ARE ALL THE GAMES SPRITES LOADED IN BASE64
     // ship image 
-
     var sReady = false;
     var sImage = new Image();
     sImage.onload = function() {
@@ -183,9 +157,24 @@
     }
     ;
     eImage.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAP0lEQVR4nI2PbQ4AMARD39F2dDdjRBO/ZkTaUF8Y5g4unDwRkXMdqEguESpWom3makJ2qSAhvW4XfK1Yj3y9GQgSl5HSqbygAAAAAElFTkSuQmCC";
+    var lReady = false;
+    var lImage = new Image();
+    lImage.onload = function() {
+        lReady = true;
+    }
+    ;
+    lImage.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATElEQVR4nGNgYGD4f+DAAbIwSC8DnIGM/zNgimHBYL0YBvynxABckCgDCEGKXIDDEOLCAI8h2A3AFgs4DMFtADY8asBgNgDGIDc7AwBnALXXKC5VuQAAAABJRU5ErkJggg==";
+
+    var rReady = false;
+    var rImage = new Image();
+    rImage.onload = function() {
+        rReady = true;
+    }
+    ;
+    rImage.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAASUlEQVR4nGNgYGD4f+DAAbIwSC8DnEEI/8cUA+slyYD/pBqACxJlACGI1wAiNOM2AIdi4sIAl2aiYwGXZhx41IBBYwCMQW52BgCpy7XX5fAVrgAAAABJRU5ErkJggg==";
 
     // THIS IS BASE OBJECT I BASED ALL OTHERS OFF OF.
-    var gizmo = function(x, y, vx, vy, launched, id, ang, rx, ry) {
+    var gizmo = function(x, y, vx, vy, launched, id, ang) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -193,37 +182,13 @@
         this.launched = launched;
         this.id = id;
         this.ang = ang;
-        this.rx = rx;
-        this.ry = ry;
 
     };
-    var lucas = 300
-    var yoda = 60
-    var jedi = window.innerWidth * 1.2
     var score = 0;
     var aliensCaught = 0;
     var aliensLost = 0;
     var pulseHits = 0;
-    // Create the canvas 
-    var canvas = document.createElement("canvas");
-    canvas.id = "gameCanvas"
-    var ctx = canvas.getContext("2d");
-    var wide = window.innerWidth;
-    var tall = window.innerHeight;
-    canvas.width = wide;
-    canvas.height = tall;
-    canvas.style.position = 'absolute';
-    canvas.style.zIndex = "-10";
-    canvas.style.left = '0%';
-    canvas.style.top = '0%';
-    document.body.appendChild(canvas);
-    var touchX = -1;
-    var touchY = -1;
-
-    // THIS SETS UP THE MIDDLE OF THE VISIBLE WINDOW 
-    var cW = wide / 2;
-    var cH = tall / 2;
-    // ORBIT VARIABLES CONTROL WHERE THE PLAYERS SHIP IS ON THE SCREEN 
+    // ORBIT VARIABLES CONTROL WHERE THE PLAYERS SHIP IS ON THE SCREEN
     var orbitX = 0;
     var orbitY = 0;
     var orbitAngle = 0;
@@ -249,9 +214,9 @@
     var starNumber = 200;
     // THE TOTAL NUMBER OF EMPS MADE
     var moving = 0;
-    var game = 0
-    var OGgame = 0
-    var FirstOrientation = '';
+    var game = 0;
+    var OGgame = 0;
+
     var nrg = 90;
     var lazy = 0;
     var lazerNumber = 40;
@@ -271,8 +236,10 @@
     stars = [];
     for (var i = 0; i < starNumber; i++) {
         t = new gizmo();
-        t.x = Math.random() * wide;
-        t.y = Math.random() * tall;
+        rAngle = Math.random() * 360
+        tDis = 32 + Math.random() * (wide - 32)
+        t.x = (cW) + (tDis * Math.cos(rAngle * Math.PI / -180))
+        t.y = (cH) + (tDis * Math.sin(rAngle * Math.PI / -180))
         t.id = Math.random();
         t.ang = Math.round(Math.random() * 12) + 12;
         //THIS IS USED FOR SCALE
@@ -300,8 +267,6 @@
         et.y = cH;
         et.vx = Math.random() * 40 - 20;
         et.vy = Math.random() * 40 - 20;
-        et.rx = et.x - cW;
-        et.ry = et.y - cH;
         et.ang = Math.atan2((et.y + et.vy) - et.y, (et.x + et.vx) - et.x) * (-180 / Math.PI)
         et.launched = false
         aliens.push(et);
@@ -315,8 +280,6 @@
         et.y = cH;
         et.vx = Math.random() * 40 - 20;
         et.vy = Math.random() * 40 - 20;
-        et.rx = et.x - cW;
-        et.ry = et.y - cH;
         et.ang = Math.atan2((et.y + et.vy) - et.y, (et.x + et.vx) - et.x) * (-180 / Math.PI)
         et.launched = false
         emps.push(et);
@@ -457,16 +420,14 @@
     var shiphud = function() {
         //DRAWS PLANETS HEALTH
         ctx.fillStyle = '#000000'
-        if (wide < tall) {
-            ctx.fillRect(0, 0, wide, tall * 0.1)
-        } else {
-            ctx.fillRect(0, 0, wide, tall * 0.2)
-        }
+        ctx.fillRect(0, 0, wide, tall * 0.1)
         ctx.fillStyle = '#526638'
+        if(planetHP<20){if(Math.random()>0.8){ctx.fillStyle = '#aa0000';}}
         ctx.beginPath();
         ctx.arc(wide * 0.1, 35, 32, 0, 2 * Math.PI);
         ctx.fill();
         ctx.fillStyle = '#6F9B35';
+        if(planetHP<20){if(Math.random()>0.8){ctx.fillStyle = '#ff0000';}}
         ctx.beginPath();
         ctx.arc(wide * 0.1, 35, 26, 0, 2 * Math.PI);
         ctx.fill();
@@ -533,6 +494,23 @@
     // Update game objects
     var update = function(modifier) {
         //console.log(modifier)
+        //LANDSCAPE ORIENTATION
+        if (window.innerHeight < window.innerWidth) {
+            if (game < 13) {
+                game += 13
+
+            }
+
+        } else {
+            if (game >= 13) {
+                game -= 13
+                if (firstO == 'Landscape') {
+                    location.reload()
+                }
+
+            }
+
+        }
 
         if (game == 2) {
             //console.log(planetHP)
@@ -591,8 +569,6 @@
                 if (aliens[i].launched) {
                     aliens[i].x += aliens[i].vx * modifier;
                     aliens[i].y += aliens[i].vy * modifier;
-                    aliens[i].rx = aliens[i].x - cW;
-                    aliens[i].ry = aliens[i].y - cH;
                 }
             }
 
@@ -601,8 +577,6 @@
                 if (emps[i].launched) {
                     emps[i].x += emps[i].vx * modifier;
                     emps[i].y += emps[i].vy * modifier;
-                    emps[i].rx = emps[i].x - cW;
-                    emps[i].ry = emps[i].y - cH;
                 }
             }
             //THIS MAKES THE SHIPS ORBIT DISTANCE CHANGE SMOOTHLY SINCE THE EASE FUNCTION CAUSED
@@ -750,7 +724,7 @@
                 touchX = -1
             }
             // THIS CONTROLS THE TITLE SCREEN SOUND MUTE OPTIONS
-            if (mutePause == 0 && touchX > (wide * 0.8) && touchX < (wide * 0.9) && touchY > (tall * 0.75) && touchY < (tall * 0.85)) {
+            if (mutePause == 0 && touchX > (wide * 0.8) && touchX < (wide * 0.9) && touchY > (tall * 0.8) && touchY < (tall * 0.9)) {
                 if (zzfxV == .2) {
                     zzfxV = 0;
 
@@ -860,32 +834,6 @@
         //DRAW BACKGROUND
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        if (game == 13) {
-            // ctx.sa3ve();
-            //ctx.rotate(90);
-            //ctx.scale(2, 2);
-
-            ctx.globalAlpha = 1;
-            ctx.font = "24px Helvetica";
-            ctx.fillStyle = '#00ff00'
-            ctx.textAlign = "center";
-            ctx.textBaseline = "top";
-            ctx.fillText("SORRY, IN THE YEAR 13000 A.D. THERE", window.innerWidth / 2, tall * 0.1, wide * .9);
-            ctx.fillText("IS NO LANDSCAPE MODE.  ALL THE", window.innerWidth / 2, tall * 0.2, wide * .9);
-            ctx.fillText("TECHNOLOGY THAT ALLOWS LANDSCAPE", window.innerWidth / 2, tall * 0.3, wide * .9);
-            ctx.fillText("MODE WAS REPURPOSED MAKING WEAPONS", window.innerWidth / 2, tall * 0.4, wide * .9);
-            ctx.fillText("TO FIGHT THE SPACE MENACE.", window.innerWidth / 2, tall * 0.5, wide * .9);
-            ctx.fillText("SO TURN YOUR PHONE BACK TO ", window.innerWidth / 2, tall * 0.6, wide * .9);
-            ctx.fillText("PORTRAIT AND DESTROY THE ALIEN", window.innerWidth / 2, tall * 0.7, wide * .9);
-            ctx.fillText("PLANET AND SAVE US ALL.", window.innerWidth / 2, tall * 0.8, wide * .9);
-            //ctx.fillText("AND    SAVE US..............", window.innerWidth / 2, tall * 9, wide * .9);
-            // ctx.fillText("AND  BRING  BACK  LANDSCAPE  MODE.", window.innerWidth / 2, tall * 0.75, wide * .9);
-            // ctx.fillText("................................", window.innerWidth / 2, tall * 0.8, wide * .9);
-            // ctx.fillText("YOUR   OUR    ONLY    HOPE,    MAYBE", window.innerWidth / 2, tall * 0.95, wide * .9);
-
-            //ctx.restore();
-
-        }
         if (game == 2 || game == 0) {
             //DRAW STARS
 
@@ -1053,10 +1001,6 @@
 
             //DRAW ONSCREEN CONTROLS
             shiphud();
-            ctx.fillStyle = '#ffffff'
-            ctx.textAlign = "left";
-            ctx.textBaseline = "top";
-            ctx.font = "30px Helvetica";
 
         }
         // TITLE SCREEN
@@ -1068,32 +1012,32 @@
             ctx.fillText("SPACE MENACE", wide / 2, tall * 0.01, wide * 0.9);
             ctx.textAlign = "right";
             ctx.font = "30px Helvetica";
-            ctx.fillText("sound effects", wide * 0.78, tall * 0.76);
+            ctx.fillText("sound effects", wide * 0.78, tall * 0.82);
             ctx.textAlign = "center";
 
             //SPEAKER ICON
             ctx.beginPath();
-            ctx.arc(wide * 0.85, tall * 0.8, 16, 0, 2 * Math.PI);
+            ctx.arc(wide * 0.85, tall * 0.85 - 1, 16, 0, 2 * Math.PI);
             ctx.fill();
             ctx.fillStyle = '#888888'
             ctx.beginPath();
-            ctx.arc(wide * 0.85, tall * 0.8, 12, 0, 2 * Math.PI);
+            ctx.arc(wide * 0.85, tall * 0.85 - 1, 12, 0, 2 * Math.PI);
             ctx.fill();
             ctx.fillStyle = '#222222'
             ctx.beginPath();
-            ctx.arc(wide * 0.85, tall * 0.8, 5, 0, 2 * Math.PI);
+            ctx.arc(wide * 0.85, tall * 0.85 - 1, 5, 0, 2 * Math.PI);
             ctx.fill();
             if (zzfxV == 0) {
                 // MUTE ICON
                 ctx.lineWidth = 4;
                 ctx.strokeStyle = '#FF0000'
                 ctx.beginPath();
-                ctx.arc(wide * 0.85, tall * 0.8, 22, 0, 2 * Math.PI);
+                ctx.arc(wide * 0.85, tall * 0.85 - 1, 22, 0, 2 * Math.PI);
                 ctx.stroke();
                 ctx.lineWidth = 8;
                 ctx.beginPath();
-                ctx.moveTo(wide * 0.82, tall * 0.76);
-                ctx.lineTo(wide * 0.87, tall * 0.84);
+                ctx.moveTo(wide * 0.82, tall * 0.82);
+                ctx.lineTo(wide * 0.87, tall * 0.87);
                 ctx.stroke();
             }
 
@@ -1271,6 +1215,34 @@
 
             ctx.fillText("Record time : " + hScore, wide * 0.1, 450, wide * 0.9);
         }
+        if (game >= 13) {
+            ctx.globalAlpha = 1;
+
+            ctx.font = "24px Helvetica";
+            ctx.fillStyle = '#00ff00'
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            if (firstO == 'Landscape') {
+                ctx.fillText("SORRY, IN THE YEAR 13000 A.D. THERE", wide * 0.01, tall * 0.1, wide * .9);
+                ctx.fillText("IS NO LANDSCAPE MODE.  ALL THE", wide * 0.01, tall * 0.18, wide * .9);
+                ctx.fillText("TECHNOLOGY THAT ALLOWS LANDSCAPE", wide * 0.01, tall * 0.26, wide * .9);
+                ctx.fillText("MODE WAS REPURPOSED MAKING WEAPONS", wide * 0.01, tall * .34, wide * .9);
+                ctx.fillText("TO FIGHT THE SPACE MENACE.", wide * 0.01, tall * .42, wide * .9);
+                ctx.fillText("SO TURN YOUR PHONE BACK TO ", wide * 0.01, tall * .50, wide * .9);
+                ctx.fillText("PORTRAIT AND DESTROY THE ALIEN", wide * 0.01, tall * .58, wide * .9);
+                ctx.fillText("PLANET AND SAVE US ALL.", wide * 0.01, tall * .66, wide * .9);
+            } else {
+                ctx.fillText("SORRY, IN THE YEAR 13000 A.D. THERE", wide * 0.1, tall * 0.01, wide * .9);
+                ctx.fillText("IS NO LANDSCAPE MODE.  ALL THE", wide * 0.1, tall * 0.06, wide * .9);
+                ctx.fillText("TECHNOLOGY THAT ALLOWS LANDSCAPE", wide * 0.1, tall * 0.11, wide * .9);
+                ctx.fillText("MODE WAS REPURPOSED MAKING WEAPONS", wide * 0.1, tall * .17, wide * .9);
+                ctx.fillText("TO FIGHT THE SPACE MENACE.", wide * 0.1, tall * .23, wide * .9);
+                ctx.fillText("SO TURN YOUR PHONE BACK TO ", wide * 0.1, tall * .28, wide * .9);
+                ctx.fillText("PORTRAIT AND DESTROY THE ALIEN", wide * 0.1, tall * .33, wide * .9);
+                ctx.fillText("PLANET AND SAVE US ALL.", wide * 0.1, tall * .38, wide * .9);
+            }
+        }
+
     };
     // THIS TICK OFF TO CAUSE ROCKETS AND PULSE BOMBS TO BE LAUNCHED
     setInterval(blastoff, 1000)
