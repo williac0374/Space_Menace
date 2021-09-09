@@ -1,8 +1,9 @@
 /*
-	TO DO
+	TO DO:  NEXT TIME, DESIGN THE GAME AND ALL ITS FEATURES BEFORE TYPING ANY CODE.
 
 */
 {
+    // THIS SETS UP A VARIABLE TO USE IN THE HACKY WAY I TRIED TO KEEP LANDSCAPE MODE FROM BREAKING THE GAME.
     var firstO = 'none'
     // Create the canvas 
     var canvas = document.createElement("canvas");
@@ -346,7 +347,7 @@
         }
         ;
     };
-    var quake = function(big) {
+    var quake = function(big) { // SHAKES THE SCREEN
         if (planetShake > 0) {
             planetCore[0].x = cW + (Math.random() * 2) - 1;
             planetCore[0].y = cH + (Math.random() * 2) - 1;
